@@ -71,6 +71,8 @@ impl GameState for State {
         ctx.set_active_console(1);
         ctx.cls();        
         self.resources.insert(ctx.key);
+        ctx.set_active_console(0);
+        self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
         let current_state = self.resources.get::<TurnState>().unwrap().clone();
         match current_state {
             TurnState::AwaitingInput => self.input_systems.execute(
@@ -90,15 +92,19 @@ impl GameState for State {
 
 fn main() -> BError {
     let context = BTermBuilder::new()
-                    .with_title("Dungeon Crawler")
-                    .with_fps_cap(30.0)
-                    .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-                    .with_tile_dimensions(32, 32)
-                    .with_resource_path("resources/")
-                    .with_font("dungeonfont.png", 32, 32)
-                    .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
-                    .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
-                    .build()?;
+        .with_title("Dungeon Crawler")
+        .with_fps_cap(30.0)
+        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        .with_tile_dimensions(32, 32)
+        .with_resource_path("resources/")
+        .with_font("dungeonfont.png", 32, 32)
+        .with_font("terminal8x8.png", 8, 8)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, 
+            "dungeonfont.png")
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, 
+            "dungeonfont.png")
+        .with_simple_console_no_bg(SCREEN_WIDTH*2, SCREEN_HEIGHT*2, "terminal8x8.png")
+        .build()?;
 
     main_loop(context, State::new()) 
 }
